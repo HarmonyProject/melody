@@ -1,0 +1,26 @@
+/* .sec-pl{
+    min-height:450px;
+    display:none;
+}
+.sec-pl-em{
+    width:100%;
+    min-height: 400px;
+}
+ */
+
+div.sec-hd{
+    font-size: 12px;
+    padding: 19.5px 15px;
+    color: #ffffff;
+    margin:auto;
+    width:100%;
+}
+
+div.sec-hd > div.sec-hd-sname{
+    margin-left: auto;
+    margin-right: auto;
+    width:40%;
+}
+span.sec-hd-text{
+    font-size: 12px;
+}

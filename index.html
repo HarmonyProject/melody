@@ -1,0 +1,106 @@
+<html>
+<head>
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="bootstrap.css">
+    <link rel="stylesheet" href="custom.css">
+    <!-- Load JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Load Handlebars -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.min.js"></script>
+    <script src="bootstrap.js"></script>
+</head>
+<body>
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar-main">
+      <div class="sec-hd">
+          <div class="sec-hd-sname">
+              <span class="sec-hd-text" id="song-title"></span>
+              <span class="sec-hd-text pull-right" id="song-time"></span>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container">
+    <div class="page-header" id="banner">
+    </div>
+    <div class="col-lg-6 sec-list">
+        <div class="list-group">
+            <a href="#" class="list-group-item active">
+                Cras justo odio
+            </a>
+            <a href="#" class="list-group-item">
+                Dapibus ac facilisis in
+            </a>
+            <a href="#" class="list-group-item">
+                Morbi leo risus
+            </a>
+        </div>
+    </div>
+    <div class="col-lg-6 well sec-pl">
+        <div id="player"></div>
+    </div>
+
+</div>
+
+<script>
+    var tag = document.createElement('script');
+
+     tag.src = "https://www.youtube.com/iframe_api";
+     var firstScriptTag = document.getElementsByTagName('script')[0];
+     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+     // 3. This function creates an <iframe> (and YouTube player)
+     //    after the API code downloads.
+     var player;
+     function onYouTubeIframeAPIReady() {
+       player = new YT.Player('player', {
+         height: '0',
+         width: '0',
+         videoId: 'V0FotIwYhMw',
+         events: {
+           'onReady': onPlayerReady,
+           'onStateChange': onPlayerStateChange
+         }
+       });
+     }
+
+     // 4. The API will call this function when the video player is ready.
+     function onPlayerReady(event) {
+       $("#song-title").text(player.getVideoData().title)
+       setInterval(function(){
+           var min = Math.floor(player.getCurrentTime()/60);
+           var sec = Math.floor(player.getCurrentTime()%60);
+           $("#song-time").text((min == 0 ? "00" : (min <= 9 ? "0"+min:min)) +":" + (sec <= 9 ? "0"+sec : sec));
+       },1000)
+       event.target.playVideo();
+     }
+
+     // 5. The API calls this function when the player's state changes.
+     //    The function indicates that when playing a video (state=1),
+     //    the player should play for six seconds and then stop.
+     var done = false;
+     function onPlayerStateChange(event) {
+       if (event.data == YT.PlayerState.PLAYING && !done) {
+        //  setTimeout(stopVideo, 6000);
+         done = true;
+       }
+        if(event.data === 0) {
+            stopVideo();
+        }
+     }
+     function stopVideo() {
+       player.stopVideo();
+     }
+
+</script>
+</body>
+</html>
