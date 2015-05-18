@@ -1,13 +1,13 @@
 <html>
 <head>
     <!-- Load CSS -->
-    <link rel="stylesheet" href="bootstrap.css">
-    <link rel="stylesheet" href="custom.css">
+    <link rel="stylesheet" href="/css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="/css/custom.css">
     <!-- Load JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Load Handlebars -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.min.js"></script>
-    <script src="bootstrap.js"></script>
+    <script src="/js/vendor/bootstrap.js"></script>
 </head>
 <body>
 <div class="navbar navbar-default navbar-fixed-top">
@@ -48,11 +48,10 @@
     <div class="col-lg-6 well sec-pl">
         <div id="player"></div>
     </div>
-
 </div>
-
+<script type="text/javascript" src="/js/app/init.js"></script>
 <script>
-    var tag = document.createElement('script');
+     var tag = document.createElement('script');
 
      tag.src = "https://www.youtube.com/iframe_api";
      var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -63,9 +62,9 @@
      var player;
      function onYouTubeIframeAPIReady() {
        player = new YT.Player('player', {
-         height: '0',
-         width: '0',
-         videoId: 'V0FotIwYhMw',
+         height: '500',
+         width: '600',
+         videoId: '-GRqHkV9Bls',
          events: {
            'onReady': onPlayerReady,
            'onStateChange': onPlayerStateChange
