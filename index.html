@@ -1,18 +1,24 @@
 <html>
 <head>
     <!-- Load CSS -->
-    <link rel="stylesheet" href="/css/vendor/bootstrap.css">
-    <link rel="stylesheet" href="/css/custom.css">
+    <link rel="stylesheet" href="css/vendor/bootstrap.css">
+    <link rel="stylesheet" href="css/custom.css">
     <!-- Load JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <!-- Load Handlebars -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/3.0.3/handlebars.min.js"></script>
-    <script src="/js/vendor/bootstrap.js"></script>
+    <script src="js/vendor/bootstrap.js"></script>
 </head>
 <body>
 <div class="navbar navbar-default navbar-fixed-top">
   <div class="container">
-    <div class="navbar-header">
+    <div class="navbar-header" style="">
+        <div class="sec-hd pull-left">
+            <div class="sec-hd-sname">
+                <span class="sec-hd-text" id="song-title"></span>
+                <span class="sec-hd-text pull-right" id="song-time"></span>
+            </div>
+        </div>
       <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
@@ -20,12 +26,6 @@
       </button>
     </div>
     <div class="navbar-collapse collapse" id="navbar-main">
-      <div class="sec-hd">
-          <div class="sec-hd-sname">
-              <span class="sec-hd-text" id="song-title"></span>
-              <span class="sec-hd-text pull-right" id="song-time"></span>
-          </div>
-      </div>
     </div>
   </div>
 </div>
@@ -33,73 +33,37 @@
     <div class="page-header" id="banner">
     </div>
     <div class="col-lg-6 sec-list">
-        <div class="list-group">
-            <a href="#" class="list-group-item active">
-                Cras justo odio
-            </a>
-            <a href="#" class="list-group-item">
-                Dapibus ac facilisis in
-            </a>
-            <a href="#" class="list-group-item">
-                Morbi leo risus
-            </a>
+        <div class="list-group" id="playlist-container">
         </div>
     </div>
-    <div class="col-lg-6 well sec-pl">
+    <div class="col-lg-6 sec-pl">
         <div id="player"></div>
+            <fieldset>
+                <div class="form-group">
+                    <div class="">
+                        <input type="text" class="form-control" id="add-input" placeholder="Add Songs" autocomplete="off">
+                        <div class="panel panel-success panel-o" style="display:none;" id="song-add-success">
+                            <div class="panel-heading panel-heading-o">
+                                <h3 class="panel-title">Success</h3>
+                            </div>
+                            <div class="panel-body" id="song-add-success-content">
+                            </div>
+                        </div>
+                        <div class="panel panel-danger panel-o" style="display:none;" id="song-add-error">
+                            <div class="panel-heading panel-heading-o">
+                                <h3 class="panel-title">Error</h3>
+                            </div>
+                            <div class="panel-body" id="song-add-error-content">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
     </div>
 </div>
-<script type="text/javascript" src="/js/app/init.js"></script>
+<script type="text/javascript" src="js/app/init.js"></script>
 <script>
-     var tag = document.createElement('script');
-
-     tag.src = "https://www.youtube.com/iframe_api";
-     var firstScriptTag = document.getElementsByTagName('script')[0];
-     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-     // 3. This function creates an <iframe> (and YouTube player)
-     //    after the API code downloads.
-     var player;
-     function onYouTubeIframeAPIReady() {
-       player = new YT.Player('player', {
-         height: '500',
-         width: '600',
-         videoId: '-GRqHkV9Bls',
-         events: {
-           'onReady': onPlayerReady,
-           'onStateChange': onPlayerStateChange
-         }
-       });
-     }
-
-     // 4. The API will call this function when the video player is ready.
-     function onPlayerReady(event) {
-       $("#song-title").text(player.getVideoData().title)
-       setInterval(function(){
-           var min = Math.floor(player.getCurrentTime()/60);
-           var sec = Math.floor(player.getCurrentTime()%60);
-           $("#song-time").text((min == 0 ? "00" : (min <= 9 ? "0"+min:min)) +":" + (sec <= 9 ? "0"+sec : sec));
-       },1000)
-       event.target.playVideo();
-     }
-
-     // 5. The API calls this function when the player's state changes.
-     //    The function indicates that when playing a video (state=1),
-     //    the player should play for six seconds and then stop.
-     var done = false;
-     function onPlayerStateChange(event) {
-       if (event.data == YT.PlayerState.PLAYING && !done) {
-        //  setTimeout(stopVideo, 6000);
-         done = true;
-       }
-        if(event.data === 0) {
-            stopVideo();
-        }
-     }
-     function stopVideo() {
-       player.stopVideo();
-     }
-
+    Melody.init();
 </script>
 </body>
 </html>

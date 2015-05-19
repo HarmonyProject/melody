@@ -10,7 +10,7 @@
 
 div.sec-hd{
     font-size: 12px;
-    padding: 19.5px 15px;
+    padding:17.5px 15px;
     color: #ffffff;
     margin:auto;
     width:100%;
@@ -19,8 +19,55 @@ div.sec-hd{
 div.sec-hd > div.sec-hd-sname{
     margin-left: auto;
     margin-right: auto;
-    width:40%;
+    /* width:40%; */
 }
 span.sec-hd-text{
-    font-size: 12px;
+    font-size: 17px;
+}
+span#song-time{
+    font-size:9px;
+    margin-top: 4px;
+}
+.navbar-header{
+    min-width:100px;
+    width:100%;
+}
+
+@media (max-width:768px) {
+    div.sec-hd {
+        width:85% !important;
+    }
+}
+
+@media only screen
+  and (min-device-width: 320px)
+  and (max-device-width: 480px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+      div.sec-hd {
+          width:85% !important;
+      }
+}
+@media only screen
+  and (min-device-width: 768px)
+  and (max-device-width: 1024px)
+  and (-webkit-min-device-pixel-ratio: 1) {
+      div.sec-hd {
+          width:85% !important;
+      }
+}
+
+.panel-o{
+    /* padding: 5px 15px !important; */
+    margin-top:10px;
+}
+.panel-heading-o{
+    padding: 5px 15px !important;
+
+}
+.panel-title{
+    font-size: 12px !important;
+}
+.panel-body {
+  padding: 5px 15px !important;
+  font-size:12px !important;
 }
