@@ -1,20 +1,26 @@
-window.onYouTubeIframeAPIReady = function(){
-    Melody.player.p = new YT.Player('player', {
-          height: Melody.player.height,
-          width: Melody.player.width,
-          videoId: Melody.player.videoId,
-          events : Melody.events
-    });
+window.getParameterByName = function(name) {
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
-
-
+window.onYouTubeIframeAPIReady = function(){
+    if(getParameterByName("mode") !== undefined && getParameterByName("mode") != "client" ){
+        Melody.player.p = new YT.Player('player', {
+              height: Melody.player.height,
+              width: Melody.player.width,
+              videoId: Melody.player.videoId,
+              events : Melody.events
+        });
+    }
+}
 window.Melody = function (){
     return {
         api: "http://localhost:25404/"
         ,player : {
             p : {}
-            ,height: '0'
-            ,width: '0'
+            ,height: '500'
+            ,width: '500'
             ,videoId : ''
             ,seek: 0
             ,len: 0
@@ -72,20 +78,26 @@ window.Melody = function (){
                     Melody.addSong();
                 }
             })
-            setInterval(function(){Melody.getPlaylist();},120000)
+            setInterval(function(){Melody.getPlaylist();},30000)
+            setInterval(function(){Melody.currentlyPlaying();},10000)
         },currentlyPlaying:function(){
             $.getJSON(this.api + "playlist/currentlyplaying",function(data){
                 if (data["seek"] >= 0 ){
-                    Melody.player.videoId = data["videoid"]
-                    Melody.player.seek = data["seek"]
-                    Melody.player.len = data["length"]
-                    Melody.player.nm = data["name"]
-                    Melody.whenSeekAvailable("seekTo", function(){
-                        Melody.player.p.cueVideoById(Melody.player.videoId);
-                        Melody.player.p.seekTo(Melody.player.seek);
+                    if (Melody.player.videoId != data["videoid"]){
+                        Melody.player.videoId = data["videoid"]
+                        Melody.player.seek = data["seek"]
+                        Melody.player.len = data["length"]
+                        Melody.player.nm = data["name"]
                         $(Melody.options.title).text(Melody.player.nm)
-                        Melody.getPlaylist();
-                    })
+                        Melody.whenSeekAvailable("seekTo", function(){
+                            if(getParameterByName("mode") !== undefined && getParameterByName("mode") != "client" ){
+                                Melody.player.p.cueVideoById(Melody.player.videoId);
+                                Melody.player.p.seekTo(Melody.player.seek);
+                                $(Melody.options.title).text(Melody.player.nm)
+                                Melody.getPlaylist();
+                            }
+                        })
+                    }
                 }else{
                     var sl = -1 * data["seek"];
                     setTimeout(function(){
