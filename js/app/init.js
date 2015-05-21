@@ -19,8 +19,8 @@ window.Melody = function (){
         api: "http://localhost:25404/"
         ,player : {
             p : {}
-            ,height: '500'
-            ,width: '500'
+            ,height: '0'
+            ,width: '0'
             ,videoId : ''
             ,seek: 0
             ,len: 0
