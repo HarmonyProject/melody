@@ -14,9 +14,22 @@ window.onYouTubeIframeAPIReady = function(){
         });
     }
 }
+Handlebars.registerHelper('userCheck', function(value) {
+    //<span class=\"label label-success pull-right\">{{userCheck added_by}}</span>
+    if (value == "system"){
+        return new Handlebars.SafeString(
+            "<span class=\"label label-warning pull-right\">"+
+            value+"</span>"
+        )
+    }
+    return new Handlebars.SafeString(
+        "<span class=\"label label-success pull-right\">"+
+        value+"</span>"
+    )
+});
 window.Melody = function (){
     return {
-        api: "http://localhost:25404/"
+        api: "http://api.yetanother.pw/"
         ,player : {
             p : {}
             ,height: '0'
@@ -25,6 +38,7 @@ window.Melody = function (){
             ,seek: 0
             ,len: 0
             ,nm: ""
+            ,user : ""
             ,controls : {
                 play : function(){
                     Melody.player.p.playVideo();
@@ -40,6 +54,7 @@ window.Melody = function (){
             ,time : "#song-time"
             ,playlist: "#playlist-container"
             ,add: "#add-input"
+            ,user: "#add-user"
         },getyt: function(){
             this.tag = document.createElement('script');
             this.tag.src = "https://www.youtube.com/iframe_api";
@@ -67,19 +82,48 @@ window.Melody = function (){
                     Melody.currentlyPlaying();
                 }
             }
-        },init: function(){
-            // return this;
-            this.getyt();
-            this.currentlyPlaying();
-            this.getPlaylist();
+        },bind: function(){
             $(Melody.options.add).keyup(function(e){
                 e.preventDefault();
                 if(e.keyCode == 13){
                     Melody.addSong();
                 }
             })
-            setInterval(function(){Melody.getPlaylist();},30000)
-            setInterval(function(){Melody.currentlyPlaying();},10000)
+            $(Melody.options.user).keyup(function(e){
+                e.preventDefault();
+                if(e.keyCode == 13){
+                    Melody.addUser();
+                }
+            })
+            return this;
+        },init: function(){
+            // return this;
+            // this.bind();
+            if (this.checkUser()){
+                this.getyt();
+                this.currentlyPlaying();
+                this.getPlaylist();
+                setInterval(function(){Melody.getPlaylist();},30000)
+                setInterval(function(){Melody.currentlyPlaying();},10000)
+            }
+        },checkUser: function(){
+            var user = this.getCookie("Melody.user")
+            if (user == ""){
+                this.promptModal()
+                return false
+            }
+            this.player.user = user;
+            return true
+        },promptModal: function(){
+            $('#userModal').modal('show')
+        },hideModal: function(){
+            $('#userModal').modal('hide')
+        },addUser: function(){
+            var user = $(Melody.options.user).val();
+            this.setCookie("Melody.user", user,180)
+            this.player.user = user;
+            this.init();
+            this.hideModal();
         },currentlyPlaying:function(){
             $.getJSON(this.api + "playlist/currentlyplaying",function(data){
                 if (data["seek"] >= 0 ){
@@ -120,7 +164,7 @@ window.Melody = function (){
                 $(Melody.options.playlist).html(compiledPlaylistTpl({playlist:data}))
             })
         },addSong:function(){
-            var data = {"q":$(Melody.options.add).val()}
+            var data = {"q":$(Melody.options.add).val(), "user":this.player.user}
             $.post( this.api + "add", data).done(function(){
                 $("#song-add-success-content").text("Song Successfully Added!")
                 $("#song-add-success").show();
@@ -140,8 +184,23 @@ window.Melody = function (){
             playlist : "{{#each playlist}}"
                 +"<a href=\"javascript:void(0);\" class=\"list-group-item\">"
                 +"{{this.name}}"
+                +"{{{userCheck this.added_by}}}"
                 +"</a>"
                 +"{{/each}}"
+        }, getCookie: function(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for(var i=0; i<ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0)==' ') c = c.substring(1);
+                if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+            }
+            return "";
+        }, setCookie: function(cname, cvalue, exdays){
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays*24*60*60*1000));
+            var expires = "expires="+d.toUTCString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
         }
     }
 }()

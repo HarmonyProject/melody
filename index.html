@@ -62,9 +62,21 @@
             </fieldset>
     </div>
 </div>
+<div class="modal fade" id="userModal" tabindex="-1" role="dialog" aria-labelledby="userModal" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-body">
+            <h4>Please enter user name</h4>
+            <div class="form-group">
+                <input type="text" class="form-control" id="add-user" placeholder="User Name" autocomplete="off">
+            </div>
+        </div>
+    </div>
+  </div>
+</div>
 <script type="text/javascript" src="js/app/init.js"></script>
 <script>
-    Melody.init();
+    Melody.bind().init();
 </script>
 </body>
 </html>
