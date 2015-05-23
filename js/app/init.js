@@ -15,18 +15,13 @@ window.onYouTubeIframeAPIReady = function(){
     }
 }
 Handlebars.registerHelper('userCheck', function(value) {
-    //<span class=\"label label-success pull-right\">{{userCheck added_by}}</span>
-    if (value == "system"){
-        return new Handlebars.SafeString(
-            "<span class=\"label label-warning pull-right\">"+
-            value+"</span>"
-        )
-    }
+    var color ="#" + Melody.colorGenerate(value);
     return new Handlebars.SafeString(
-        "<span class=\"label label-success pull-right\">"+
+        "<span class=\"label pull-right\" style = \"background-color: "+color.substring(0,7)+" \">"+
         value+"</span>"
     )
 });
+
 window.Melody = function (){
     return {
         api: "http://api.yetanother.pw/"
@@ -62,7 +57,6 @@ window.Melody = function (){
             firstScriptTag.parentNode.insertBefore(this.tag, firstScriptTag);
         },events:{
             'onReady': function(event){
-                console.log(event);
                 var player = event.target;
                 setInterval(function(){
                     var min = Math.floor(player.getCurrentTime()/60);
@@ -165,10 +159,20 @@ window.Melody = function (){
                 }
             }, interval);
         },getPlaylist:function(){
-            $.getJSON(this.api + "playlist", function(data){
+            $.getJSON(this.api + "playlist", function(data){ 
                 var compiledPlaylistTpl = Handlebars.compile(Melody.handlebars.playlist);
                 $(Melody.options.playlist).html(compiledPlaylistTpl({playlist:data}))
             })
+        }
+        ,colorGenerate:function(str) {
+              var hash = 0;
+                for (var i = 0; i < str.length; i++) {
+                   hash = str.charCodeAt(i) + ((hash << 5) - hash);
+                }
+                return ((hash>>24)&0xFF).toString(16) + 
+                        ((hash>>16)&0xFF).toString(16) + 
+                        ((hash>>8)&0xFF).toString(16) + 
+                        (hash&0xFF).toString(16);;
         },addSong:function(){
             $(Melody.options.add).unbind("keyup");
             if (this.player.user == undefined){
@@ -187,6 +191,7 @@ window.Melody = function (){
             }).fail(function(){
                 $("#song-add-error-content").text("Error adding song")
                 $("#song-add-error").show();
+                Melody.bind();
                 setTimeout(function(){
                     $("#song-add-error").hide();
                 },5000)
