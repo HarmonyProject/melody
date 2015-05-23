@@ -96,9 +96,11 @@ window.Melody = function (){
                 }
             })
             return this;
+        },converse: function(){
         },init: function(){
             // return this;
-            // this.bind();
+            this.converse();
+            this.bind();
             if (this.checkUser()){
                 this.getyt();
                 this.currentlyPlaying();
@@ -164,6 +166,9 @@ window.Melody = function (){
                 $(Melody.options.playlist).html(compiledPlaylistTpl({playlist:data}))
             })
         },addSong:function(){
+            if (this.player.user == undefined){
+
+            }
             var data = {"q":$(Melody.options.add).val(), "user":this.player.user}
             $.post( this.api + "add", data).done(function(){
                 $("#song-add-success-content").text("Song Successfully Added!")
@@ -201,6 +206,8 @@ window.Melody = function (){
             d.setTime(d.getTime() + (exdays*24*60*60*1000));
             var expires = "expires="+d.toUTCString();
             document.cookie = cname + "=" + cvalue + "; " + expires;
+        }, error: function(){
+
         }
     }
 }()
