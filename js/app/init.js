@@ -18,7 +18,7 @@ Handlebars.registerHelper('userCheck', function(value) {
     var color ="#" + Melody.colorGenerate(value);
     return new Handlebars.SafeString(
         "<span class=\"label pull-right\" style = \"background-color: "+color.substring(0,7)+" \">"+
-        value+"</span>"
+        value.charAt(0).toUpperCase() + value.slice(1)+"</span>"
     )
 });
 
