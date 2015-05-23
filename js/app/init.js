@@ -83,18 +83,22 @@ window.Melody = function (){
                 }
             }
         },bind: function(){
-            $(Melody.options.add).keyup(function(e){
-                e.preventDefault();
-                if(e.keyCode == 13){
-                    Melody.addSong();
+            $(Melody.options.add).unbind("keyup").bind("keyup" ,function(e){
+                var thisKey = e.keyCode ? e.keyCode : e.which;
+                if(thisKey == 13 && $(Melody.options.add).val()){
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (e.type == 'keyup') {
+                         Melody.addSong(); 
+                    }
                 }
-            })
+            });
             $(Melody.options.user).keyup(function(e){
                 e.preventDefault();
                 if(e.keyCode == 13){
                     Melody.addUser();
                 }
-            })
+            });
             return this;
         },converse: function(){
         },init: function(){
@@ -166,8 +170,9 @@ window.Melody = function (){
                 $(Melody.options.playlist).html(compiledPlaylistTpl({playlist:data}))
             })
         },addSong:function(){
+            $(Melody.options.add).unbind("keyup");
             if (this.player.user == undefined){
-
+                return;
             }
             var data = {"q":$(Melody.options.add).val(), "user":this.player.user}
             $.post( this.api + "add", data).done(function(){
@@ -177,6 +182,7 @@ window.Melody = function (){
                 setTimeout(function(){
                     $("#song-add-success").hide();
                 },5000)
+                Melody.bind();
                 Melody.getPlaylist();
             }).fail(function(){
                 $("#song-add-error-content").text("Error adding song")
