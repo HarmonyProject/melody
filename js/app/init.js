@@ -17,8 +17,8 @@ window.onYouTubeIframeAPIReady = function(){
 Handlebars.registerHelper('userCheck', function(value) {
     var color ="#" + Melody.colorGenerate(value);
     return new Handlebars.SafeString(
-        "<span class=\"label pull-right\" style = \"background-color: "+color.substring(0,7)+" \">"+
-        value.charAt(0).toUpperCase() + value.slice(1)+"</span>"
+        "<div class=\"col-md-2 label pull-right vcenter\" style = \"background-color: "+color.substring(0,7)+" \">"+
+        value.charAt(0).toUpperCase() + value.slice(1)+"</div>"
     )
 });
 
@@ -198,10 +198,10 @@ window.Melody = function (){
             })
         },handlebars:{
             playlist : "{{#each playlist}}"
-                +"<a href=\"javascript:void(0);\" class=\"list-group-item\">"
-                +"{{this.name}}"
+                +"<div class=\"list-group-item row\">"
+                +"<div class = \"col-md-10\">{{this.name}}</div>"
                 +"{{{userCheck this.added_by}}}"
-                +"</a>"
+                +"</div>"
                 +"{{/each}}"
         }, getCookie: function(cname) {
             var name = cname + "=";
