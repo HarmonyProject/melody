@@ -1,0 +1,68 @@
+
+
+/* ==========================================================================
+   Author's custom styles
+   ========================================================================== */
+.full {
+  background: url(../img/background-3.jpg) no-repeat center center;
+  min-height:100%;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+body {
+    background: none;
+}
+
+#search-box,#now-playing,#coming-up {
+    padding-top: 20px;
+    padding-bottom: 20px;
+      position: relative;
+      max-height: 100%;
+      max-width: 100%;
+      background-color: white;
+      opacity: 0.8;
+}
+
+#now-playing {
+    margin-top:50px;
+    margin-bottom: 50px;
+}
+
+#youtube-embedded-player {
+    float:center;
+    padding:10px;
+}
+
+#playing-icon {
+    height:65px;
+    width:100%;
+}
+
+#songinfo-top {
+    display:flex;
+    align-items:flex-start;
+}
+
+#songinfo-bottom {
+    display: flex;
+    align-items:flex-end;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
