@@ -16,19 +16,33 @@ body {
     background: none;
 }
 
+#wrapper {
+  height : 1000px;
+  /*background: #e6e6e6;*/
+  padding-left: 0px;
+  padding-right: 0px;
+  opacity: 0.9;
+}
+
 #search-box,#now-playing,#coming-up {
     padding-top: 20px;
     padding-bottom: 20px;
-      position: relative;
-      max-height: 100%;
-      max-width: 100%;
-      background-color: white;
-      opacity: 0.8;
+    position: relative;
+    max-height: 100%;
+    max-width: 100%;
+    opacity: 1.0;
+    border-top:1px solid black;
+    border-bottom:1px solid black;
 }
 
-#now-playing {
+#search-box {
+      background-color: white;
+}
+
+#now-playing, #coming-up {
     margin-top:50px;
     margin-bottom: 50px;
+    background-color: white;
 }
 
 #youtube-embedded-player {
@@ -51,6 +65,28 @@ body {
     align-items:flex-end;
 }
 
+.logo {
+  width: 35px;
+  height: 35px;
+  float:right;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+}
+
+#welcome {
+  height:200px;
+  width:100%;
+  margin-top: 500px;
+}
+
+.welcome-text {
+  font-size: 50px;
+  color:white;
+  font-family: 'Arizonia', cursive;
+}
 
 
 

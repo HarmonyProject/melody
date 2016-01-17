@@ -7,10 +7,12 @@ tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
+var youtubeReady = false;
 // Initialise the youtube player
 function onYouTubeIframeAPIReady() {
-    init();
-    loadPlaylist();
+    youtubeReady = true;
+    //init();
+    //loadPlaylist();
 }
 
 function init() {
@@ -44,6 +46,13 @@ function init() {
     setInterval(setSeek, 1000);
 }
 
+function loadLogoBox() {
+    FB.api('/v2.5/' + user.id + '/picture', function(response) {
+        console.log(response.data.url);
+        $('#fb-avatar').attr('src', response.data.url);
+    });
+}
+
 function loadPlaylist() {
     $.getJSON("http://api.yetanother.pw:25404/playlist", function(data){
         $('.list-group-item').remove();
@@ -62,8 +71,7 @@ function loadPlaylist() {
 $('#search-form').submit(function(event) {
     event.preventDefault();
     query = $('#search-term').val();
-    user = "Abhishek";
-    search(query, user);
+    search(query, user.name);
 });
 
 function setName(name) {
