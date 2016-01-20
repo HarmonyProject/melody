@@ -230,7 +230,7 @@ function libraryAction(button) {
 }
 
 function chooseColorOfButton(videoid) {
-    url = encodeURI("http://localhost:25404/library/songexists?videoid="+videoid+"&userid="+user.id);
+    url = encodeURI("http://api.yetanother.pw:25404/library/songexists?videoid="+videoid+"&userid="+user.id);
     $.ajax({
         type : "GET",
         url : url,
@@ -243,7 +243,7 @@ function chooseColorOfButton(videoid) {
 
 
 function updateLibrary(songObject, operation, button) {
-    url = encodeURI("http://localhost:25404/library?operation="+operation+"&username="+user.name+"&userid="+user.id+"&songtrack="+songObject.track+"&songartist="+songObject.artist+"&songrating="+songObject.rating+"&songfav="+songObject.fav+"&songvideoid="+songObject.videoid);
+    url = encodeURI("http://api.yetanother.pw:25404/library?operation="+operation+"&username="+user.name+"&userid="+user.id+"&songtrack="+songObject.track+"&songartist="+songObject.artist+"&songrating="+songObject.rating+"&songfav="+songObject.fav+"&songvideoid="+songObject.videoid);
     $.ajax({
         type : "GET",
         url : url,
