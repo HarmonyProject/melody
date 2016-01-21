@@ -1,7 +1,7 @@
 var videoid;
 var player;
 var youtubeReady = false;
-var ready = false;
+var YTplayerinitialised = false;
 var current_song;
 
 //This code loads the IFrame Player API code asynchronously.
@@ -14,14 +14,44 @@ function onYouTubeIframeAPIReady() {
     youtubeReady = true;
 }
 
-function init() {
-    song = current_song;
-    setName(song.track);
-    setAlbumArt(song.videoid);
-    player = initYTPlayer(song.videoid, getSeek());
-    unloadPlaylist(JSON.parse(retrievePlaylist()));
-    setInterval(setSeek, 1000);
-    setInterval(persistPlaylist, 15000);
+function init(songObject) {
+    if (songObject == null || songObject.videoid == null) {
+        console.log("no song found to initialise player.");
+        hideYTPlayer();
+    } else {
+        setInterval(setSeek, 1000);
+        setInterval(persistPlaylist, 15000);
+        player = initYTPlayer(songObject.videoid, getSeek());
+        YTplayerinitialised = true;
+        setName(songObject.track);
+        setAlbumArt(songObject.videoid);
+        current_song = songObject;
+        showYTPlayer();
+        updateTimestampInLibrary(songObject);
+        unloadPlaylist(JSON.parse(retrievePlaylist()));
+    }
+}
+
+function loadNowPlaying(songObject){
+    if (songObject == null || songObject.videoid == null) {
+        console.log("no song found to load into player.");
+        hideYTPlayer();
+    } else {
+        setName(songObject.track);
+        setAlbumArt(songObject.videoid);
+        player.loadVideoById(songObject.videoid, 0);
+        current_song = songObject;
+        showYTPlayer();
+        updateTimestampInLibrary(songObject);
+    }
+}
+
+function hideYTPlayer() {
+    if ($('#video-box').is(":visible")) $('#video-box').hide();
+}
+
+function showYTPlayer() {
+    if ($('#video-box').is(":hidden")) $('#video-box').show();
 }
 
 function initYTPlayer(videoid, seek) {
@@ -54,12 +84,11 @@ function loadLogoBox() {
     });
 }
 
-
-function getCurrentlyPlaying() {
-    song = localStorage.getItem('current-song');
-    if (song != "undefined" && song != null && song.videoid != null) {
-        current_song = JSON.parse(song);
-        ready = true;
+function playFirstSong() {
+    song = JSON.parse(localStorage.getItem('current-song'));
+    if (song != null && song.videoid != null) {
+        current_song = song;
+        init(current_song);
     }
     else {
         current_song = {};
@@ -69,7 +98,7 @@ function getCurrentlyPlaying() {
         current_song.track = data.track;
         current_song.rating = data.rating;
         current_song.fav = data.fav;
-        ready = true;
+        init(current_song);
         });
     }
 }
@@ -94,7 +123,7 @@ function addToPlaylist(songObject) {
           +      songObject.videoid
           + '</div>'
           +  '<div class = "col-sm-1">'
-          +      '<button type="button" class="btn btn-default library-button" id="' + songObject.videoid +'" onclick = "libraryAction(this);">library</button>'
+          +      '<button type="button" class="btn btn-default library-button" id="' + songObject.videoid +'" onclick = "updateLibrary(this);">library</button>'
           + '</div>'
           + '<div class = "col-sm-1 rating">'
           +      songObject.rating
@@ -112,7 +141,7 @@ function addToPlaylist(songObject) {
 
 function persistPlaylist(){
     localStorage.setItem('raga-playlist', JSON.stringify(loadPlaylist()));
-    if (ready) localStorage.setItem('current-song', JSON.stringify(current_song));
+    if (YTplayerinitialised) localStorage.setItem('current-song', JSON.stringify(current_song));
 }
 
 function retrievePlaylist(){
@@ -173,26 +202,36 @@ event.target.playVideo();
 setSeek();
 }
 
-function loadNowPlaying(songObject){
-    current_song = songObject;
-    setName(current_song.track);
-    setAlbumArt(current_song.videoid);
-    player.loadVideoById(current_song.videoid, 0);
+function updateTimestampInLibrary(songObject) {
+    uri = encodeURI("http://api.yetanother.pw:25404/library/updatelastplayed?userid="+user.id+"&videoid="+songObject.videoid);
+    $.getJSON(uri, function(data){
+        console.log("updated last_played value in library.");
+    });
 }
 
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.ENDED) {
-        songObject = getNext();
-        loadNowPlaying(songObject);
+        playNext();
     }
 }
 
-function getNext() {
-    var firstItem = $('.list-group-item').first();
-    if (firstItem == []) {
+function emptyPlaylist() {
+   return ($('.list-group-item').length == 0);
+}
 
-    }
-    else {
+function playNext() {
+    if (emptyPlaylist()) {
+        uri = encodeURI("http://api.yetanother.pw:25404/library/get?userid="+user.id+"&fav=false")
+        $.getJSON(uri, function(songObject){
+            if (YTplayerinitialised) {
+                loadNowPlaying(songObject)
+            }
+            else {
+                init(songObject);
+            }
+        });
+    } else {
+        firstItem = $('.list-group-item').first();
         songObject = {
             "videoid" : firstItem.find('div.videoid').text(),
             "artist" : firstItem.find('div.artist').text(),
@@ -201,8 +240,14 @@ function getNext() {
             "fav" : firstItem.find('div.fav').text(),
         }
         firstItem.remove();
+
+        if (YTplayerinitialised) {
+            loadNowPlaying(songObject)
+        }
+        else {
+            init(songObject);
+        }
     }
-    return songObject;
 }
 
 function search(query) {
@@ -216,17 +261,11 @@ function search(query) {
             "fav" : 0
         }
         addToPlaylist(songObject);
+        if (player.getPlayerState() == -1 || player.getPlayerState() == 0) {
+            console.log("playing searched item since playlist is empty.")
+            playNext();
+        }
     });
-}
-
-function libraryAction(button) {
-    var operation;
-    if ($(button).hasClass('btn-default')) {
-        operation = 'add';
-    } else {
-        operation = 'remove';
-    }
-    updateLibrary(createSongFromListGroupItem($(button).closest('li')), operation, button);
 }
 
 function chooseColorOfButton(videoid) {
@@ -242,7 +281,15 @@ function chooseColorOfButton(videoid) {
 }
 
 
-function updateLibrary(songObject, operation, button) {
+function updateLibrary(button) {
+    var operation;
+    if ($(button).hasClass('btn-default')) {
+        operation = 'add';
+    } else {
+        operation = 'remove';
+    }
+    songObject = createSongFromListGroupItem($(button).closest('li'))
+
     url = encodeURI("http://api.yetanother.pw:25404/library?operation="+operation+"&username="+user.name+"&userid="+user.id+"&songtrack="+songObject.track+"&songartist="+songObject.artist+"&songrating="+songObject.rating+"&songfav="+songObject.fav+"&songvideoid="+songObject.videoid);
     $.ajax({
         type : "GET",
@@ -253,7 +300,7 @@ function updateLibrary(songObject, operation, button) {
                 if (operation == "remove") $(button).addClass('btn-default').removeClass('btn-danger');
             },
             400 : function() {
-                console.log("unable to update library");
+                    ("unable to update library");
             }
         }
     });

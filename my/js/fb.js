@@ -33,8 +33,8 @@ function checkLoginState() {
 }
 
 function load(){
-    if (youtubeReady == true && ready == true) {
-        init();
+    if (youtubeReady == true) {
+        playFirstSong();
     } else {
         setTimeout(load, 1000);
     }
@@ -43,7 +43,6 @@ function load(){
 function getIdentity(){
     FB.api('/me', function(response) {
         user = response;
-        getCurrentlyPlaying();
         loadLogoBox();
         load();
     });
