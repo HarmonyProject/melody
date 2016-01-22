@@ -19,16 +19,17 @@ function init(songObject) {
         console.log("no song found to initialise player.");
         hideYTPlayer();
     } else {
+        current_song = songObject;
         setInterval(setSeek, 1000);
         setInterval(persistPlaylist, 15000);
         player = initYTPlayer(songObject.videoid, getSeek());
         YTplayerinitialised = true;
         setName(songObject.track);
         setAlbumArt(songObject.videoid);
-        current_song = songObject;
         showYTPlayer();
         updateTimestampInLibrary(songObject);
         unloadPlaylist(JSON.parse(retrievePlaylist()));
+        highlightCurrentlyPlayingSongInPlaylist();
     }
 }
 
@@ -43,7 +44,12 @@ function loadNowPlaying(songObject){
         current_song = songObject;
         showYTPlayer();
         updateTimestampInLibrary(songObject);
+        highlightCurrentlyPlayingSongInPlaylist();
     }
+}
+
+function highlightCurrentlyPlayingSongInPlaylist(){
+    $('li#'+current_song.videoid).css({'background':'#DAE6F0'});
 }
 
 function hideYTPlayer() {
@@ -110,7 +116,7 @@ function getSeek() {
 }
 
 function addToPlaylist(songObject) {
-    $('<li class = "list-group-item clearfix">'
+    $('<li class = "list-group-item clearfix" id="'+ songObject.videoid + '">'
           + '<div class = "container">'
           + '<div class = "row">'
           + '<div class = "col-sm-3 artist">'
@@ -123,7 +129,7 @@ function addToPlaylist(songObject) {
           +      songObject.videoid
           + '</div>'
           +  '<div class = "col-sm-1">'
-          +      '<button type="button" class="btn btn-default library-button" id="' + songObject.videoid +'" onclick = "updateLibrary(this);">library</button>'
+          +      '<button type="button" class="btn library-button" id="' + songObject.videoid +'" onclick = "updateLibrary(this);">library</button>'
           + '</div>'
           + '<div class = "col-sm-1 rating">'
           +      songObject.rating
@@ -198,8 +204,8 @@ function setSeek() {
 }
 
 function onPlayerReady(event) {
-event.target.playVideo();
-setSeek();
+    event.target.playVideo();
+    setSeek();
 }
 
 function updateTimestampInLibrary(songObject) {
@@ -211,8 +217,13 @@ function updateTimestampInLibrary(songObject) {
 
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.ENDED) {
+        removeNowPlayingFromPlaylist();
         playNext();
     }
+}
+
+function removeNowPlayingFromPlaylist(){
+    $('.list-group-item').first().remove();
 }
 
 function emptyPlaylist() {
@@ -221,32 +232,40 @@ function emptyPlaylist() {
 
 function playNext() {
     if (emptyPlaylist()) {
-        uri = encodeURI("http://api.yetanother.pw:25404/library/get?userid="+user.id+"&fav=false")
-        $.getJSON(uri, function(songObject){
-            if (YTplayerinitialised) {
-                loadNowPlaying(songObject)
-            }
-            else {
-                init(songObject);
-            }
-        });
+        playSongFromLibrary()
     } else {
-        firstItem = $('.list-group-item').first();
-        songObject = {
-            "videoid" : firstItem.find('div.videoid').text(),
-            "artist" : firstItem.find('div.artist').text(),
-            "track" : firstItem.find('div.track').text(),
-            "rating" : firstItem.find('div.rating').text(),
-            "fav" : firstItem.find('div.fav').text(),
-        }
-        firstItem.remove();
+        playFirstItemInPlaylist()
+    }
+}
 
-        if (YTplayerinitialised) {
-            loadNowPlaying(songObject)
+function playSongFromLibrary(){
+    uri = encodeURI("http://api.yetanother.pw:25404/library/get?userid="+user.id+"&fav=false")
+    $.getJSON(uri, function(songObject){
+        // if there is no song to play from library, collapse player
+        if (songObject.videoid == "") {
+            hideYTPlayer();
+        } else {
+            addToPlaylist(songObject);
+            playFirstItemInPlaylist();
         }
-        else {
-            init(songObject);
-        }
+    });
+}
+
+function playFirstItemInPlaylist(){
+    firstItem = $('.list-group-item').first();
+    songObject = {
+        "videoid" : firstItem.find('div.videoid').text(),
+        "artist" : firstItem.find('div.artist').text(),
+        "track" : firstItem.find('div.track').text(),
+        "rating" : firstItem.find('div.rating').text(),
+        "fav" : firstItem.find('div.fav').text(),
+    }
+
+    if (YTplayerinitialised) {
+        loadNowPlaying(songObject)
+    }
+    else {
+        init(songObject);
     }
 }
 
@@ -275,7 +294,11 @@ function chooseColorOfButton(videoid) {
         url : url,
         success : function(data) {
             exists = data.status;
-            if (exists == true) $('#'+videoid).addClass('btn-danger').removeClass('btn-default');
+            if (exists == true) {
+                $('button#'+videoid).addClass('btn-danger');
+            } else {
+                $('button#'+videoid).addClass('btn-default');
+            }
         }
     });
 }
