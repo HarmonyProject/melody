@@ -49,7 +49,7 @@ function loadNowPlaying(songObject){
 }
 
 function highlightCurrentlyPlayingSongInPlaylist(){
-    $('li#'+current_song.videoid).css({'background':'#DAE6F0'});
+    $( "li").filter('#li-'+current_song.videoid).css({'background':'#DAE6F0'});
 }
 
 function hideYTPlayer() {
@@ -116,7 +116,7 @@ function getSeek() {
 }
 
 function addToPlaylist(songObject) {
-    $('<li class = "list-group-item clearfix" id="'+ songObject.videoid + '">'
+    $('<li class = "list-group-item clearfix" id="li-'+ songObject.videoid + '">'
           + '<div class = "container">'
           + '<div class = "row">'
           + '<div class = "col-sm-3 artist">'
@@ -129,7 +129,7 @@ function addToPlaylist(songObject) {
           +      songObject.videoid
           + '</div>'
           +  '<div class = "col-sm-1">'
-          +      '<button type="button" class="btn library-button" id="' + songObject.videoid +'" onclick = "updateLibrary(this);">library</button>'
+          +      '<button type="button" class="btn library-button" id="button-' + songObject.videoid +'" onclick = "updateLibrary(this);">library</button>'
           + '</div>'
           + '<div class = "col-sm-1 rating">'
           +      songObject.rating
@@ -295,9 +295,9 @@ function chooseColorOfButton(videoid) {
         success : function(data) {
             exists = data.status;
             if (exists == true) {
-                $('button#'+videoid).addClass('btn-danger');
+                $( ":button").filter('#button-'+videoid).addClass('btn-danger');
             } else {
-                $('button#'+videoid).addClass('btn-default');
+                $( ":button").filter('#button-'+videoid).addClass('btn-default');
             }
         }
     });
