@@ -375,8 +375,8 @@ function removeFromPlaylist(button) {
     playlist_entry = $(button).closest('li');
     was_currently_playing = playlist_entry.attr('data-hashid') == current_song.hashid;
     console.log(was_currently_playing);
-    playlist_entry.remove();
     if (was_currently_playing) playNext();
+    playlist_entry.remove();
 }
 
 function formatTime(seconds, hasHours) {
