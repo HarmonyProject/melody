@@ -45,6 +45,11 @@ body {
     background-color: white;
 }
 
+#coming-up {
+  height: 400px;
+  overflow: auto;
+}
+
 #youtube-embedded-player {
     float:center;
     padding:10px;

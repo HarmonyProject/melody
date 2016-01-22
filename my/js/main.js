@@ -3,12 +3,18 @@ var player;
 var youtubeReady = false;
 var YTplayerinitialised = false;
 var current_song;
+var id = 0;
 
 //This code loads the IFrame Player API code asynchronously.
 var tag = document.createElement('script');
 tag.src = "https://www.youtube.com/iframe_api";
 var firstScriptTag = document.getElementsByTagName('script')[0];
 firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+function hashId(){
+    function S4() { return  (((1+Math.random())*0x10000)|0).toString(16).substring(1);}
+    return (S4() + S4() + "-" + S4() + "-4" + S4().substr(0,3) + "-" + S4() + "-" + S4() + S4() + S4()).toLowerCase();
+}
 
 function onYouTubeIframeAPIReady() {
     youtubeReady = true;
@@ -48,8 +54,17 @@ function loadNowPlaying(songObject){
     }
 }
 
+function currentPlaylistEntry() {
+    identifier = 'li[data-hashid=\''+ current_song.hashid + '\']';
+    return $(identifier);
+}
+
 function highlightCurrentlyPlayingSongInPlaylist(){
-    $( "li").filter('#li-'+current_song.videoid).css({'background':'#DAE6F0'});
+    currentPlaylistEntry().css({'background':'#DAE6F0'});
+}
+
+function unhighlightCurrentlyPlayingSongInPlaylist(){
+    currentPlaylistEntry().css({'background':''});
 }
 
 function hideYTPlayer() {
@@ -104,6 +119,9 @@ function playFirstSong() {
         current_song.track = data.track;
         current_song.rating = data.rating;
         current_song.fav = data.fav;
+        current_song.hashid = hashId();
+        addToPlaylist(current_song);
+        persistPlaylist();
         init(current_song);
         });
     }
@@ -116,13 +134,12 @@ function getSeek() {
 }
 
 function addToPlaylist(songObject) {
-    $('<li class = "list-group-item clearfix" id="li-'+ songObject.videoid + '">'
-          + '<div class = "container">'
+    $('<li class = "list-group-item clearfix" id="li-'+ songObject.videoid + '" data-hashid="' + songObject.hashid + '">'
           + '<div class = "row">'
-          + '<div class = "col-sm-3 artist">'
+          + '<div class = "col-sm-2 artist">'
           +      songObject.artist
           + '</div>'
-          + '<div class = "col-sm-6 track">'
+          + '<div class = "col-sm-5 track">'
           +      songObject.track
           + '</div>'
           + '<div class = "col-sm-0 videoid">'
@@ -137,7 +154,9 @@ function addToPlaylist(songObject) {
           +  '<div class = "col-sm-1 fav">'
           +      songObject.fav
           + '</div>'
-          +'</div>'
+          + '<div class = "col-sm-2">'
+          +'    <button type="button" class="close" onclick = "removeFromPlaylist(this);">&times;</button>'
+          + '</div>'
           +'</div>'
           +'</li>')
     .appendTo('.list-group');
@@ -169,11 +188,13 @@ function createSongFromListGroupItem(listGroupItem) {
             "artist" : $(listGroupItem).find('div.artist').text(),
             "track" : $(listGroupItem).find('div.track').text(),
             "rating" : $(listGroupItem).find('div.rating').text(),
-            "fav" : $(listGroupItem).find('div.fav').text()
+            "fav" : $(listGroupItem).find('div.fav').text(),
+            "hashid" : $(listGroupItem).attr('data-hashid')
         };
 }
 
 function unloadPlaylist(playlist) {
+    $('list-group-item').remove();
     $.each(playlist, function(key, value) {
         addToPlaylist(value);
     });
@@ -217,13 +238,19 @@ function updateTimestampInLibrary(songObject) {
 
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.ENDED) {
-        removeNowPlayingFromPlaylist();
+        trimPlaylist();
         playNext();
     }
 }
 
-function removeNowPlayingFromPlaylist(){
-    $('.list-group-item').first().remove();
+function playlist_length(){
+    return $('.list-group-item').length;
+}
+
+// trim the starting items of the playlist if it starts increasing beyond 50 elements
+function trimPlaylist(){
+    extra = playlist_length() - 50 - 1;
+    if (extra >= 0) $('.list-group-item:lt(' + extra + ')').remove();
 }
 
 function emptyPlaylist() {
@@ -232,10 +259,20 @@ function emptyPlaylist() {
 
 function playNext() {
     if (emptyPlaylist()) {
-        playSongFromLibrary()
-    } else {
-        playFirstItemInPlaylist()
+        playSongFromLibrary();
     }
+    else {
+        unhighlightCurrentlyPlayingSongInPlaylist();
+        if (currentlyPlayingIsLast()) {
+            playSongFromLibrary()
+        } else {
+            playSongFromPlaylist()
+        }
+    }
+}
+
+function currentlyPlayingIsLast(){
+    return ($('.list-group-item').last().attr('data-hashid') == current_song.hashid);
 }
 
 function playSongFromLibrary(){
@@ -245,22 +282,21 @@ function playSongFromLibrary(){
         if (songObject.videoid == "") {
             hideYTPlayer();
         } else {
+            songObject.hashid = hashId();
             addToPlaylist(songObject);
-            playFirstItemInPlaylist();
+            if (YTplayerinitialised) {
+                loadNowPlaying(songObject)
+            }
+            else {
+                init(songObject);
+            }
         }
     });
 }
 
-function playFirstItemInPlaylist(){
-    firstItem = $('.list-group-item').first();
-    songObject = {
-        "videoid" : firstItem.find('div.videoid').text(),
-        "artist" : firstItem.find('div.artist').text(),
-        "track" : firstItem.find('div.track').text(),
-        "rating" : firstItem.find('div.rating').text(),
-        "fav" : firstItem.find('div.fav').text(),
-    }
-
+function playSongFromPlaylist(){
+    nextItem = currentPlaylistEntry().next();
+    songObject = createSongFromListGroupItem(nextItem);
     if (YTplayerinitialised) {
         loadNowPlaying(songObject)
     }
@@ -277,12 +313,18 @@ function search(query) {
             "artist" : "",
             "track" : data[0].name,
             "rating" : 0,
-            "fav" : 0
+            "fav" : 0,
+            "hashid" : hashId()
         }
         addToPlaylist(songObject);
         if (player.getPlayerState() == -1 || player.getPlayerState() == 0) {
             console.log("playing searched item since playlist is empty.")
-            playNext();
+        if (YTplayerinitialised) {
+            loadNowPlaying(songObject)
+        }
+        else {
+            init(songObject);
+    }
         }
     });
 }
@@ -327,6 +369,14 @@ function updateLibrary(button) {
             }
         }
     });
+}
+
+function removeFromPlaylist(button) {
+    playlist_entry = $(button).closest('li');
+    was_currently_playing = playlist_entry.attr('data-hashid') == current_song.hashid;
+    console.log(was_currently_playing);
+    playlist_entry.remove();
+    if (was_currently_playing) playNext();
 }
 
 function formatTime(seconds, hasHours) {
