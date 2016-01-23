@@ -51,7 +51,25 @@ function loadNowPlaying(songObject){
         showYTPlayer();
         updateTimestampInLibrary(songObject);
         highlightCurrentlyPlayingSongInPlaylist();
+        enqueueInRadio(current_song.track, user.name);
     }
+}
+
+function enqueueInRadio(query, user){
+    $.ajax({
+      type: "POST",
+      url: "http://api.yetanother.pw:25404/add",
+      crossDomain : true,
+      data: {
+        'q' : query,
+        'user' : user
+      },
+      success: function(){
+      },
+      error : function() {
+        console.log("error in adding this to raga radio");
+      }
+    });
 }
 
 function currentPlaylistEntry() {
