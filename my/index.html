@@ -26,6 +26,7 @@
             <link rel="stylesheet" href="css/bootstrap.min.css"/>
             <link rel="stylesheet" href="css/bootstrap-theme.min.css"/>
             <link rel="stylesheet" href="css/main.css"/>
+            <link rel="stylesheet" href="css/rating.css"/>
             <link href='https://fonts.googleapis.com/css?family=Arizonia' rel='stylesheet' type='text/css'/>
             <script src = "js/fb.js">
             </script>
@@ -63,7 +64,7 @@
               </div>
             </div>
             <div class = "container-fluid" id = "wrapper" style = "display:none">
-              <nav class="navbar navbar-inverse" data-offset-top="0" id = "search-box">
+              <nav class="navbar" data-offset-top="0" id = "search-box">
                 <div class="row">
                   <div class = "col-sm-3">
                     <div id = "row">
@@ -99,17 +100,17 @@
                 </div>
               </nav>
               <div class="container-fluid" id = "now-playing">
-                <div class="row" id = "song-information">
                   <div class="col-sm-9">
                   </div>
                   <div class="col-sm-3" id="video-box">
                     <iframe id = "youtube-embedded-player" width="360" height="210" frameborder="0" allowfullscreen>
                     </iframe>
                   </div>
-                </div>
               </div>
               <div class="container-fluid" id="coming-up">
-                <div class = "col-sm-12">
+                <div class="col-sm-6">
+                </div>
+                <div class = "col-sm-6">
                   <ul class="list-group">
                   </ul>
                 </div>
@@ -120,7 +121,7 @@
                 </div>
                 <div class="col-sm-2" style = "padding:2px;">
                   <div class="tcenter">
-                    <button class="btn btn-default">
+                    <button class="btn btn-default" onclick="playPrev();">
                       <i class="glyphicon glyphicon-backward">
                       </i>
                     </button>

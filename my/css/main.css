@@ -38,13 +38,18 @@ body {
     border-bottom: 1px solid black;
 }
 
-#now-playing, #coming-up {
+#search-box, #now-playing, #coming-up {
     background-color: white;
 }
 
 #coming-up {
     height: 380px;
     overflow: auto;
+    background: #414147;
+}
+
+#now-playing {
+    background: #414147;
 }
 
 #youtube-embedded-player {
@@ -144,4 +149,23 @@ a:link {
 
 button:focus {
     outline: 0 !important;
+}
+
+.list-group-item {
+    height: 30px;
+    padding: 4px;
+}
+
+.list-group-item p {
+    font-size: 10px;
+}
+
+.list-group-item button {
+    background: none;
+    border: none;
+    width: 10px;
+}
+
+.glyphicon-heart {
+    color: red;
 }

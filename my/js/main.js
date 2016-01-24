@@ -56,7 +56,7 @@ function loadNowPlaying(songObject) {
         showYTPlayer();
         updateTimestampInLibrary(songObject);
         highlightCurrentlyPlayingSongInPlaylist();
-        enqueueInRadio(current_song.track, user.name);
+        //enqueueInRadio(current_song.track, user.name);
     }
 }
 
@@ -82,16 +82,13 @@ function currentPlaylistEntry() {
 }
 
 function highlightCurrentlyPlayingSongInPlaylist() {
+    $('.list-group-item')
+        .css({
+            'background': ''
+        });
     currentPlaylistEntry()
         .css({
             'background': '#DAE6F0'
-        });
-}
-
-function unhighlightCurrentlyPlayingSongInPlaylist() {
-    currentPlaylistEntry()
-        .css({
-            'background': ''
         });
 }
 
@@ -115,7 +112,7 @@ function initYTPlayer(videoid, seek) {
         playerVars: {
             'rel': 0,
             'controls': 1,
-            'autoplay': 1,
+            'autoplay': 0,
             'start': seek,
             'showinfo': 0,
             'modestbranding': 1,
@@ -164,7 +161,19 @@ function getSeek() {
 }
 
 function addToPlaylist(songObject) {
-    $('<li class = "list-group-item clearfix" id="li-' + songObject.videoid + '" data-hashid="' + songObject.hashid + '">' + '<div class = "row">' + '<div class = "col-sm-2 artist">' + songObject.artist + '</div>' + '<div class = "col-sm-5 track">' + songObject.track + '</div>' + '<div class = "col-sm-0 videoid">' + songObject.videoid + '</div>' + '<div class = "col-sm-1">' + '<button type="button" class="btn library-button" id="button-' + songObject.videoid + '" onclick = "updateLibrary(this);">library</button>' + '</div>' + '<div class = "col-sm-1 rating">' + songObject.rating + '</div>' + '<div class = "col-sm-1 fav">' + songObject.fav + '</div>' + '<div class = "col-sm-2">' + '    <button type="button" class="close" onclick = "removeFromPlaylist(this);">&times;</button>' + '</div>' + '</div>' + '</li>')
+    $('<li class = "list-group-item clearfix" id="li-' + songObject.videoid + '" data-hashid="' + songObject.hashid + '">' 
+        + '<p class = "col-sm-8 track" onclick = "playOnTrackClick(this)">' + songObject.track + '</p>' 
+        + '<p class = "col-sm-0 videoid">' + songObject.videoid + '</p>' 
+        + '<button type="button" class="glyphicon col-sm-1" id="button-' + songObject.videoid + '" onclick = "updateLibrary(this);"></button>' 
+        + '<span class = "col-sm-2 star-rating">' 
+        +  '<input type="radio" name="rating" value="1"><i></i>'
+        +  '<input type="radio" name="rating" value="2"><i></i>'
+        +  '<input type="radio" name="rating" value="3"><i></i>'
+        +  '<input type="radio" name="rating" value="4"><i></i>'
+        +  '<input type="radio" name="rating" value="5"><i></i>'
+        + '</span>' 
+        + '<div class = "col-sm-1">' + '<button type="button" class="close" onclick = "removeFromPlaylist(this);">&times;</button> </div>' 
+        + '</li>')
         .appendTo('.list-group');
     chooseColorOfButton(songObject.videoid);
     persistPlaylist();
@@ -192,19 +201,19 @@ function loadPlaylist() {
 function createSongFromListGroupItem(listGroupItem) {
     return {
         "videoid": $(listGroupItem)
-            .find('div.videoid')
+            .find('p.videoid')
             .text(),
         "artist": $(listGroupItem)
-            .find('div.artist')
+            .find('p.artist')
             .text(),
         "track": $(listGroupItem)
-            .find('div.track')
+            .find('p.track')
             .text(),
         "rating": $(listGroupItem)
-            .find('div.rating')
+            .find('p.rating')
             .text(),
         "fav": $(listGroupItem)
-            .find('div.fav')
+            .find('p.fav')
             .text(),
         "hashid": $(listGroupItem)
             .attr('data-hashid')
@@ -218,17 +227,29 @@ function unloadPlaylist(playlist) {
         addToPlaylist(value);
     });
 }
-$('#search-form')
-    .submit(function(event) {
-        event.preventDefault();
-        query = $('#search-term')
-            .val();
-        search(query, user.name);
-    });
-$('.progress')
-    .click(function() {
-        console.log('wow!');
-    });
+
+function events() {
+    $('#search-form')
+        .submit(function(event) {
+            event.preventDefault();
+            query = $('#search-term')
+                .val();
+            search(query, user.name);
+        });
+    $('.progress')
+        .click(function() {
+            console.log('wow!');
+        });
+    $(':radio')
+        .change(function() {
+            $('.choice').text( this.value + ' stars' );
+        });
+}
+
+function playOnTrackClick(button) {
+    songObject = createSongFromListGroupItem(button.closest('li'));
+    loadNowPlaying(songObject);    
+}
 
 function setName(name) {
     $('#song-name')
@@ -253,14 +274,13 @@ function setSeek() {
 }
 
 function onPlayerReady(event) {
-    event.target.playVideo();
+    //event.target.playVideo();
     setSeek();
 }
 
 function updateTimestampInLibrary(songObject) {
     uri = encodeURI("http://api.yetanother.pw:25404/library/updatelastplayed?userid=" + user.id + "&videoid=" + songObject.videoid);
     $.getJSON(uri, function(data) {
-        console.log("updated last_played value in library.");
     });
 }
 
@@ -277,7 +297,7 @@ function playlist_length() {
 }
 // trim the starting items of the playlist if it starts increasing beyond 50 elements
 function trimPlaylist() {
-    extra = playlist_length() - 50 - 1;
+    extra = playlist_length() - 10 - 1;
     if (extra >= 0) $('.list-group-item:lt(' + extra + ')')
         .remove();
 }
@@ -287,11 +307,15 @@ function emptyPlaylist() {
         .length == 0);
 }
 
+function playPrev(){
+    if ($('.list-group-item').first().attr('data-hashid') != currentPlaylistEntry().attr('data-hashid'))
+        loadNowPlaying(createSongFromListGroupItem($(currentPlaylistEntry()).prev()));
+}
+
 function playNext() {
     if (emptyPlaylist()) {
         playSongFromLibrary();
     } else {
-        unhighlightCurrentlyPlayingSongInPlaylist();
         if (currentlyPlayingIsLast()) {
             playSongFromLibrary()
         } else {
@@ -368,11 +392,11 @@ function chooseColorOfButton(videoid) {
             if (exists == true) {
                 $(":button")
                     .filter('#button-' + videoid)
-                    .addClass('btn-danger');
+                    .addClass('glyphicon-heart');
             } else {
                 $(":button")
                     .filter('#button-' + videoid)
-                    .addClass('btn-default');
+                    .addClass('glyphicon-heart-empty');
             }
         }
     });
@@ -381,7 +405,7 @@ function chooseColorOfButton(videoid) {
 function updateLibrary(button) {
     var operation;
     if ($(button)
-        .hasClass('btn-default')) {
+        .hasClass('glyphicon-heart-empty')) {
         operation = 'add';
     } else {
         operation = 'remove';
@@ -395,11 +419,11 @@ function updateLibrary(button) {
         statusCode: {
             200: function() {
                 if (operation == "add") $(button)
-                    .addClass('btn-danger')
-                    .removeClass('btn-default');
+                    .addClass('glyphicon-heart')
+                    .removeClass('glyphicon-heart-empty');
                 if (operation == "remove") $(button)
-                    .addClass('btn-default')
-                    .removeClass('btn-danger');
+                    .addClass('glyphicon-heart-empty')
+                    .removeClass('glyphicon-heart');
             },
             400: function() {
                 ("unable to update library");
@@ -412,7 +436,6 @@ function removeFromPlaylist(button) {
     playlist_entry = $(button)
         .closest('li');
     was_currently_playing = playlist_entry.attr('data-hashid') == current_song.hashid;
-    console.log(was_currently_playing);
     if (was_currently_playing) playNext();
     playlist_entry.remove();
 }
