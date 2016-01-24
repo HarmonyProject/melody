@@ -56,7 +56,7 @@ function loadNowPlaying(songObject) {
         showYTPlayer();
         updateTimestampInLibrary(songObject);
         highlightCurrentlyPlayingSongInPlaylist();
-        //enqueueInRadio(current_song.track, user.name);
+        enqueueInRadio(current_song.track, user.name);
     }
 }
 

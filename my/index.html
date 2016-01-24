@@ -99,20 +99,20 @@
                   </div>
                 </div>
               </nav>
-              <div class="container-fluid" id = "now-playing">
-                  <div class="col-sm-9">
-                  </div>
-                  <div class="col-sm-3" id="video-box">
-                    <iframe id = "youtube-embedded-player" width="360" height="210" frameborder="0" allowfullscreen>
-                    </iframe>
-                  </div>
-              </div>
-              <div class="container-fluid" id="coming-up">
+              <div class="row">
                 <div class="col-sm-6">
                 </div>
                 <div class = "col-sm-6">
-                  <ul class="list-group">
-                  </ul>
+                  <div class="row">
+                    <div class="col-sm-12" id = "now-playing">
+                      <div id = "video-box">
+                      </div>
+                    </div>
+                    <div class="col-sm-12" id = "coming-up">
+                      <ul class="list-group">
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
               <nav class="navbar navbar-inverse" data-offset-bottom="0">
@@ -160,12 +160,7 @@
             </div>
             <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js">
             </script>
-            <script>
-              window.jQuery || document.write('
-              <script src="js/vendor/jquery-1.11.2.min.js">
-                <\/script>
-                  ')
-                </script>
+
                 <script src="js/vendor/bootstrap.min.js">
                 </script>
                 <script src="js/main.js">

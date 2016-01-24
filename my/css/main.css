@@ -17,7 +17,6 @@ body {
 
 #wrapper {
     height: 100%;
-    /*background: #e6e6e6;*/
     padding-left: 0px;
     padding-right: 0px;
     opacity: 0.9;
@@ -34,27 +33,26 @@ body {
     max-height: 100%;
     max-width: 100%;
     opacity: 1.0;
+}
+
+#search-box {
+    background: white;
+}
+
+#coming-up {
+    height: 430px;
+    overflow: auto;
+    background: #414147;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
 }
 
-#search-box, #now-playing, #coming-up {
-    background-color: white;
-}
-
-#coming-up {
-    height: 380px;
-    overflow: auto;
-    background: #414147;
-}
-
 #now-playing {
-    background: #414147;
+    padding: 0px;
 }
 
-#youtube-embedded-player {
-    float: center;
-    padding: 10px;
+#video-box {
+    float: right;
 }
 
 #playing-icon {
