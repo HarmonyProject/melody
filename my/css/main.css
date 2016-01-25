@@ -17,8 +17,9 @@ body {
 
 #wrapper {
     padding: 0px;
-    height: 100%;
+    height: 750px;
     opacity: 0.9;
+    background: #414147;
 }
 
 .navbar {
@@ -35,24 +36,24 @@ body {
     background: white;
     padding-top: 20px;
     padding-bottom: 15px;
+    border: 1px solid black;
 }
 
-#main {
-    height: 650px;
-    background: #414147;
-}
+#main {}
 
 #coming-up {
-    height: 440px;
     overflow: auto;
-    border-top: 1px solid black;
-    border-bottom: 1px solid black;
+    border: 1px solid black;
     padding: 20px 30px;
+    display: table;
+    height: 400px;
 }
 
 #now-playing {
+    border-left: 1px solid black;
     padding: 20px 30px;
     background: #414147;
+    height: 100%;
 }
 
 #footer {
