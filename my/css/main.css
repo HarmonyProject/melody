@@ -16,9 +16,8 @@ body {
 }
 
 #wrapper {
+    padding: 0px;
     height: 100%;
-    padding-left: 0px;
-    padding-right: 0px;
     opacity: 0.9;
 }
 
@@ -26,29 +25,40 @@ body {
     margin: 0px;
 }
 
-#search-box, #now-playing, #coming-up {
-    padding-top: 20px;
-    padding-bottom: 20px;
-    position: relative;
+#header, #main, #footer {
     max-height: 100%;
     max-width: 100%;
     opacity: 1.0;
 }
 
-#search-box {
+#header {
     background: white;
+    padding-top: 20px;
+    padding-bottom: 15px;
+}
+
+#main {
+    height: 650px;
+    background: #414147;
 }
 
 #coming-up {
-    height: 430px;
+    height: 440px;
     overflow: auto;
-    background: #414147;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
+    padding: 20px 30px;
 }
 
 #now-playing {
-    padding: 0px;
+    padding: 20px 30px;
+    background: #414147;
+}
+
+#footer {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
 }
 
 #video-box {

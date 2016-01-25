@@ -64,7 +64,7 @@
               </div>
             </div>
             <div class = "container-fluid" id = "wrapper" style = "display:none">
-              <nav class="navbar" data-offset-top="0" id = "search-box">
+              <nav class="navbar" data-offset-top="0" id = "header">
                 <div class="row">
                   <div class = "col-sm-3">
                     <div id = "row">
@@ -99,23 +99,25 @@
                   </div>
                 </div>
               </nav>
-              <div class="row">
-                <div class="col-sm-6">
-                </div>
-                <div class = "col-sm-6">
-                  <div class="row">
-                    <div class="col-sm-12" id = "now-playing">
-                      <div id = "video-box">
+              <div class="col-sm-12" id = "main">
+                <div class="row">
+                  <div class="col-sm-6">
+                  </div>
+                  <div class = "col-sm-6">
+                    <div class="row">
+                      <div class="col-sm-12" id = "now-playing">
+                        <div id = "video-box">
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-sm-12" id = "coming-up">
-                      <ul class="list-group">
-                      </ul>
+                      <div class="col-sm-12" id = "coming-up">
+                        <ul class="list-group">
+                        </ul>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <nav class="navbar navbar-inverse" data-offset-bottom="0">
+              <nav class="navbar navbar-inverse" id = "footer" data-offset-bottom="0">
                 <div class="col-sm-1" >
                   <img id = "albumart" class = "img-thumbnail"/>
                 </div>
@@ -125,8 +127,8 @@
                       <i class="glyphicon glyphicon-backward">
                       </i>
                     </button>
-                    <button class="btn btn-default" onclick="playToggle(this)">
-                      <i class="glyphicon glyphicon-pause">
+                    <button class="btn btn-default" id = "play-toggle" onclick="playToggle(this)">
+                      <i class="glyphicon glyphicon-play">
                       </i>
                     </button>
                     <button class="btn btn-default" onclick="playNext();">
@@ -138,7 +140,7 @@
                 <div class = "col-sm-9">
                   <div class="row">
                     <div class = "col-sm-2">
-                      <img id = "equalizer-gif" src="../img/equalizer.gif" style="height:25px;"/>
+                      <img id = "equalizer-gif" src="../img/equalizer.gif" style="height:25px; display:none"/>
                     </div>
                     <div class = "col-sm-9">
                       <p id = "song-name">

@@ -32,7 +32,7 @@ function init(songObject) {
     } else {
         current_song = songObject;
         setInterval(setSeek, 1000);
-        setInterval(persistPlaylist, 15000);
+        setInterval(persistPlaylist, 5000);
         player = initYTPlayer(songObject.videoid, getSeek());
         YTplayerinitialised = true;
         setName(songObject.track);
@@ -49,13 +49,14 @@ function loadNowPlaying(songObject) {
         console.log("no song found to load into player.");
         hideYTPlayer();
     } else {
+        current_song = songObject;
         setName(songObject.track);
         setAlbumArt(songObject.videoid);
-        player.loadVideoById(songObject.videoid, 0);
-        current_song = songObject;
-        showYTPlayer();
+        player.cueVideoById(songObject.videoid, 0);
         updateTimestampInLibrary(songObject);
         highlightCurrentlyPlayingSongInPlaylist();
+        if (is_playing()) player.playVideo();
+        showYTPlayer();
         enqueueInRadio(current_song.track, user.name);
     }
 }
@@ -228,29 +229,6 @@ function unloadPlaylist(playlist) {
     });
 }
 
-function events() {
-    $('#search-form')
-        .submit(function(event) {
-            event.preventDefault();
-            query = $('#search-term')
-                .val();
-            search(query, user.name);
-        });
-    $('.progress')
-        .click(function() {
-            console.log('wow!');
-        });
-    $(':radio')
-        .change(function() {
-            $('.choice').text( this.value + ' stars' );
-        });
-}
-
-function playOnTrackClick(button) {
-    songObject = createSongFromListGroupItem(button.closest('li'));
-    loadNowPlaying(songObject);    
-}
-
 function setName(name) {
     $('#song-name')
         .text(name);
@@ -274,7 +252,6 @@ function setSeek() {
 }
 
 function onPlayerReady(event) {
-    //event.target.playVideo();
     setSeek();
 }
 
@@ -291,13 +268,9 @@ function onPlayerStateChange(event) {
     }
 }
 
-function playlist_length() {
-    return $('.list-group-item')
-        .length;
-}
 // trim the starting items of the playlist if it starts increasing beyond 50 elements
 function trimPlaylist() {
-    extra = playlist_length() - 10 - 1;
+    extra = $('.list-group-item').length; - 10 - 1;
     if (extra >= 0) $('.list-group-item:lt(' + extra + ')')
         .remove();
 }
@@ -322,41 +295,41 @@ function playNext() {
             playSongFromPlaylist()
         }
     }
+
+    function playSongFromLibrary() {
+        uri = encodeURI("http://api.yetanother.pw:25404/library/get?userid=" + user.id + "&fav=false")
+        $.getJSON(uri, function(songObject) {
+            // if there is no song to play from library, collapse player
+            if (songObject.videoid == "") {
+                hideYTPlayer();
+            } else {
+                songObject.hashid = hashId();
+                addToPlaylist(songObject);
+                if (YTplayerinitialised) {
+                    loadNowPlaying(songObject)
+                } else {
+                    init(songObject);
+                }
+            }
+        });
+    }
+
+    function playSongFromPlaylist() {
+        nextItem = currentPlaylistEntry()
+            .next();
+        songObject = createSongFromListGroupItem(nextItem);
+        if (YTplayerinitialised) {
+            loadNowPlaying(songObject)
+        } else {
+            init(songObject);
+        }
+    }
 }
 
 function currentlyPlayingIsLast() {
     return ($('.list-group-item')
         .last()
         .attr('data-hashid') == current_song.hashid);
-}
-
-function playSongFromLibrary() {
-    uri = encodeURI("http://api.yetanother.pw:25404/library/get?userid=" + user.id + "&fav=false")
-    $.getJSON(uri, function(songObject) {
-        // if there is no song to play from library, collapse player
-        if (songObject.videoid == "") {
-            hideYTPlayer();
-        } else {
-            songObject.hashid = hashId();
-            addToPlaylist(songObject);
-            if (YTplayerinitialised) {
-                loadNowPlaying(songObject)
-            } else {
-                init(songObject);
-            }
-        }
-    });
-}
-
-function playSongFromPlaylist() {
-    nextItem = currentPlaylistEntry()
-        .next();
-    songObject = createSongFromListGroupItem(nextItem);
-    if (YTplayerinitialised) {
-        loadNowPlaying(songObject)
-    } else {
-        init(songObject);
-    }
 }
 
 function search(query) {
@@ -440,22 +413,60 @@ function removeFromPlaylist(button) {
     playlist_entry.remove();
 }
 
-function playToggle(button) {
-    icon = $(button)
-        .find('i');
+function play() {
+    icon = $('#play-toggle').find('i');
     if (icon.hasClass('glyphicon-play')) {
         icon.addClass('glyphicon-pause')
             .removeClass('glyphicon-play');
         player.playVideo();
         $('#equalizer-gif')
             .show();
-    } else if (icon.hasClass('glyphicon-pause')) {
+    }
+}
+
+function pause() {
+    icon = $('#play-toggle').find('i');
+    if (icon.hasClass('glyphicon-pause')) {
         icon.addClass('glyphicon-play')
             .removeClass('glyphicon-pause');
         player.pauseVideo();
         $('#equalizer-gif')
             .hide();
     }
+}
+
+function is_playing() {
+    icon = $('#play-toggle').find('i');
+    if (icon.hasClass('glyphicon-pause')) return true;
+    else if (icon.hasClass('glyphicon-play')) return false;
+}
+
+function playToggle(button) {
+    if (is_playing()) pause();
+    else play();
+}
+
+function events() {
+    $('#search-form')
+        .submit(function(event) {
+            event.preventDefault();
+            query = $('#search-term')
+                .val();
+            search(query, user.name);
+        });
+    $('.progress')
+        .click(function() {
+            console.log('wow!');
+        });
+    $(':radio')
+        .change(function() {
+            $('.choice').text( this.value + ' stars' );
+        });
+}
+
+function playOnTrackClick(button) {
+    songObject = createSongFromListGroupItem(button.closest('li'));
+    loadNowPlaying(songObject);    
 }
 
 function formatTime(seconds, hasHours) {
