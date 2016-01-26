@@ -4,66 +4,49 @@
 
 .full {
     background: url(../img/background-3.jpg) no-repeat center center;
-    min-height: 100%;
+    height: 100%;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
+    margin: 0px;
 }
 
 body {
     background: none;
+    height: 100%;
+}
+
+.container-fluid {
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 #wrapper {
-    padding: 0px;
-    height: 750px;
     opacity: 0.9;
-    background: #414147;
-}
-
-.navbar {
-    margin: 0px;
-}
-
-#header, #main, #footer {
-    max-height: 100%;
-    max-width: 100%;
-    opacity: 1.0;
-}
-
-#header {
-    background: white;
-    padding-top: 20px;
-    padding-bottom: 15px;
-    border: 1px solid black;
-}
-
-#main {}
-
-#coming-up {
-    overflow: auto;
-    border: 1px solid black;
-    padding: 20px 30px;
-    display: table;
-    height: 400px;
-}
-
-#now-playing {
-    border-left: 1px solid black;
-    padding: 20px 30px;
     background: #414147;
     height: 100%;
 }
 
-#footer {
-    position: absolute;
-    bottom: 0px;
-    width: 100%;
+#header, #footer {
+    padding: 1%;
+}
+
+#now-playing, #coming-up {
+    border: 1px solid black;
 }
 
 #video-box {
     float: right;
+}
+
+#suggestions-entry {
+    display: table;
+    height: 100%;
+}
+
+.playlist {
+    overflow: auto;
 }
 
 #playing-icon {
@@ -107,13 +90,11 @@ body {
 #song-name {
     color: white;
     font-size: 12px;
-    margin-top: 8px;
 }
 
 #timer {
     color: #D8D9EA;
     font-size: 10px;
-    margin-top: 21%;
 }
 
 .videoid {
@@ -125,7 +106,6 @@ body {
 }
 
 .tcenter {
-    padding: 5px;
     text-align: center;
     margin-right: 0px;
     margin-left: 0px;

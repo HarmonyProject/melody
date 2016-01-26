@@ -83,7 +83,7 @@ function currentPlaylistEntry() {
 }
 
 function highlightCurrentlyPlayingSongInPlaylist() {
-    $('.list-group-item')
+    $('.playlist-entry')
         .css({
             'background': ''
         });
@@ -162,7 +162,7 @@ function getSeek() {
 }
 
 function addToPlaylist(songObject) {
-    $('<li class = "list-group-item clearfix" id="li-' + songObject.videoid + '" data-hashid="' + songObject.hashid + '">' 
+    $('<li class = "list-group-item clearfix playlist-entry" id="li-' + songObject.videoid + '" data-hashid="' + songObject.hashid + '">' 
         + '<p class = "col-sm-8 track" onclick = "playOnTrackClick(this)">' + songObject.track + '</p>' 
         + '<p class = "col-sm-0 videoid">' + songObject.videoid + '</p>' 
         + '<button type="button" class="glyphicon col-sm-1" id="button-' + songObject.videoid + '" onclick = "updateLibrary(this);"></button>' 
@@ -175,9 +175,22 @@ function addToPlaylist(songObject) {
         + '</span>' 
         + '<div class = "col-sm-1">' + '<button type="button" class="close" onclick = "removeFromPlaylist(this);">&times;</button> </div>' 
         + '</li>')
-        .appendTo('.list-group');
+        .appendTo('.playlist');
     chooseColorOfButton(songObject.videoid);
     persistPlaylist();
+}
+
+function addToSuggestions(songObject) {
+    $('<li class = "list-group-item" id = "suggestions-entry">'
+        + '<div id="suggestion-' + songObject.videoid + '" data-hashid="' + songObject.hashid + '">'
+        + '<img class = "col-sm-4" id = "suggestion-albumart" class = "img-thumbnail"/>'
+        + '<p class = "col-sm-8 track" onclick = "playOnSuggestionClick(this)"></p>' 
+        + '</div>'
+        + '</li>')
+        .appendTo('#suggestions').find('ul');
+    url = "https://img.youtube.com/vi/" + songObject.videoid + "/0.jpg";
+    $('#suggestion-'+songObject.videoid).find('#suggestion-albumart').attr('src', url);
+    $('#suggestion-'+songObject.videoid).find('.track').text(songObject.track);
 }
 
 function persistPlaylist() {
@@ -191,7 +204,7 @@ function retrievePlaylist() {
 
 function loadPlaylist() {
     var playlist = [];
-    $('.list-group-item')
+    $('.playlist-entry')
         .each(function(index) {
             songObject = createSongFromListGroupItem($(this));
             playlist.push(songObject);
@@ -221,8 +234,23 @@ function createSongFromListGroupItem(listGroupItem) {
     };
 }
 
+function createSongFromSuggestionItem(listGroupItem){
+    videoid = $(listGroupItem).find('div').attr('id').replace('suggestion-', '');
+    songObject = {
+        "videoid": videoid,
+        "artist": "",
+        "track": $(listGroupItem)
+            .find('p.track')
+            .text(),
+        "rating": "",
+        "fav": "",
+        "hashid": $(listGroupItem).find('div').attr('data-hashid')
+    };
+    return songObject;
+}
+
 function unloadPlaylist(playlist) {
-    $('list-group-item')
+    $('playlist-entry')
         .remove();
     $.each(playlist, function(key, value) {
         addToPlaylist(value);
@@ -270,18 +298,18 @@ function onPlayerStateChange(event) {
 
 // trim the starting items of the playlist if it starts increasing beyond 50 elements
 function trimPlaylist() {
-    extra = $('.list-group-item').length; - 10 - 1;
-    if (extra >= 0) $('.list-group-item:lt(' + extra + ')')
+    extra = $('.playlist-entry').length; - 10 - 1;
+    if (extra >= 0) $('.playlist-entry:lt(' + extra + ')')
         .remove();
 }
 
 function emptyPlaylist() {
-    return ($('.list-group-item')
+    return ($('.playlist-entry')
         .length == 0);
 }
 
 function playPrev(){
-    if ($('.list-group-item').first().attr('data-hashid') != currentPlaylistEntry().attr('data-hashid'))
+    if ($('.playlist-entry').first().attr('data-hashid') != currentPlaylistEntry().attr('data-hashid'))
         loadNowPlaying(createSongFromListGroupItem($(currentPlaylistEntry()).prev()));
 }
 
@@ -327,14 +355,33 @@ function playNext() {
 }
 
 function currentlyPlayingIsLast() {
-    return ($('.list-group-item')
+    return ($('.playlist-entry')
         .last()
         .attr('data-hashid') == current_song.hashid);
+}
+
+function createSongObjectFromSearchData(dataObj) {
+    return {
+            "videoid": dataObj.videoid,
+            "artist": "",
+            "track": dataObj.name,
+            "rating": 0,
+            "fav": 0,
+            "hashid": hashId()
+        };
+}
+
+function populateSuggestions(data) {
+    $('#suggestions').empty();
+    $.each(data, function(index, value){
+        addToSuggestions(createSongObjectFromSearchData(value));
+    });
 }
 
 function search(query) {
     uri = encodeURI("http://api.yetanother.pw:25404/query?q=" + query);
     $.getJSON(uri, function(data) {
+        populateSuggestions(data);
         songObject = {
             "videoid": data[0].videoid,
             "artist": "",
@@ -466,6 +513,11 @@ function events() {
 
 function playOnTrackClick(button) {
     songObject = createSongFromListGroupItem(button.closest('li'));
+    loadNowPlaying(songObject);    
+}
+
+function playOnSuggestionClick(button) {
+    songObject = createSongFromSuggestionItem(button.closest('li'));
     loadNowPlaying(songObject);    
 }
 
