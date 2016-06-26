@@ -1,49 +1,53 @@
- var user;
-
+var user;
 // Load the SDK asynchronously
-(function(d, s, id){
- var js, fjs = d.getElementsByTagName(s)[0];
- if (d.getElementById(id)) {return;}
- js = d.createElement(s); js.id = id;
- js.src = "//connect.facebook.net/en_US/sdk.js";
- fjs.parentNode.insertBefore(js, fjs);
+(function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) {
+        return;
+    }
+    js = d.createElement(s);
+    js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));
-
-
 window.fbAsyncInit = function() {
-FB.init({
-  appId      : '902706029842457',
-  xfbml      : true,
-  version    : 'v2.5'
-});
-checkLoginState();
+    FB.init({
+        appId: '902706029842457',
+        xfbml: true,
+        version: 'v2.5'
+    });
+    checkLoginState();
 };
 
 function checkLoginState() {
     FB.getLoginStatus(function(response) {
         if (response.status === 'connected') {
-            $('#welcome').remove();
-            $('.fb_iframe_widget').remove();
+            $('#welcome')
+                .remove();
+            $('.fb_iframe_widget')
+                .remove();
             getIdentity();
-            $('#wrapper').show();
-            load();
+            $('#wrapper')
+                .show();
         } else {
             //$('.fb-login-button').show();
         }
     });
 }
 
-function load(){
+function load() {
     if (youtubeReady == true) {
-        init();
-        loadPlaylist();
+        playFirstSong();
+    } else {
+        setTimeout(load, 1000);
     }
+    events();
 }
 
-function getIdentity(){
+function getIdentity() {
     FB.api('/me', function(response) {
         user = response;
         loadLogoBox();
+        load();
     });
 }
-
