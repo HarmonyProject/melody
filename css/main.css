@@ -46,11 +46,6 @@ body {
     float: right;
 }
 
-#playlist-container {
-    height: 390px;
-    overflow: auto;
-}
-
 .recommendations {
     height: 100%;
     overflow: hidden;
@@ -72,6 +67,8 @@ body {
 .playlist {
     margin-top: 20px;
     margin-bottom: 20px;
+    overflow: scroll;
+    height: 250px;
 }
 
 #playlist-albumart, #recommendation-albumart {

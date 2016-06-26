@@ -61,6 +61,10 @@ function loadNowPlaying(songObject) {
         highlightCurrentlyPlayingSongInPlaylist();
         if (is_playing()) player.playVideo();
         showYTPlayer();
+        setTimeout(function(){
+            pause();
+            setTimeout(function(){play();}, 100);
+        },1000);
         populateRecommendations(songObject.videoid);
         //enqueueInRadio(current_song.track, user.name);
     }
@@ -116,7 +120,7 @@ function initYTPlayer(videoid, seek) {
         videoId: videoid,
         playerVars: {
             'rel': 0,
-            'controls': 0,
+            'controls': 1,
             'autoplay': 1,
             'start': seek,
             'showinfo': 0,
@@ -286,16 +290,16 @@ function updateTimestampInLibrary(songObject) {
 
 function onPlayerStateChange(event) {
     if (event.data == YT.PlayerState.ENDED) {
-        trimPlaylist();
         playNext();
     }
 }
 
 // trim the starting items of the playlist if it starts increasing beyond 50 elements
 function trimPlaylist() {
-    extra = $('#playlist-entry').length - 8 - 1;
-    if (extra >= 0) $('#playlist-entry:lt(' + extra + ')')
-        .remove();
+    // trim the playlist so that currently playing is always the 3rd song in the playlist
+    extra = currentPlaylistEntry().prevAll().length - 2;
+    //if (extra >= 0) $('.playlist #playlist-entry').slice(0, extra).remove();
+    if (extra >= 0) currentPlaylistEntry().prevAll().slice(0, extra).remove()
 }
 
 function emptyPlaylist() {
@@ -304,7 +308,7 @@ function emptyPlaylist() {
 }
 
 function playPrev(){
-    if ($('#playlist-entry').first().attr('data-hashid') != currentPlaylistEntry().attr('data-hashid'))
+    if ($('#playlist-entry div').first().attr('data-hashid') != currentPlaylistEntry().attr('data-hashid'))
         loadNowPlaying(createSongFromPlaylistItem($(currentPlaylistEntry()).prev()));
 }
 
@@ -318,6 +322,7 @@ function playNext() {
             playSongFromPlaylist()
         }
     }
+    trimPlaylist();
 
     function playSongFromLibrary() {
         uri = encodeURI("http://api.yetanother.pw:25404/library/get?userid=" + user.id + "&fav=false")
