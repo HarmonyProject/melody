@@ -117,7 +117,7 @@ function initYTPlayer(videoid, seek) {
         playerVars: {
             'rel': 0,
             'controls': 0,
-            'autoplay': 0,
+            'autoplay': 1,
             'start': seek,
             'showinfo': 0,
             'modestbranding': 1,
