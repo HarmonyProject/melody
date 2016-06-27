@@ -70,21 +70,6 @@ function loadNowPlaying(songObject) {
     }
 }
 
-function enqueueInRadio(query, user) {
-    $.ajax({
-        type: "POST",
-        url: "http://api.yetanother.pw:25404/add",
-        crossDomain: true,
-        data: {
-            'q': query,
-            'user': user
-        },
-        success: function() {},
-        error: function() {
-            console.log("error in adding this to raga radio");
-        }
-    });
-}
 
 function currentPlaylistEntry() {
     identifier = '#playlist-entry div[data-hashid=\'' + current_song.hashid + '\']';
@@ -180,8 +165,8 @@ function addToPlaylist(songObject) {
         + '</li>')
     .appendTo('.playlist');
     url = "https://img.youtube.com/vi/" + songObject.videoid + "/0.jpg";
-    $('#playlist-'+songObject.videoid).find('#playlist-albumart').attr('src', url);
-    $('#playlist-'+songObject.videoid).find('.track').text(songObject.track);
+    $('#playlist-entry div[data-hashid=\'' + songObject.hashid + '\']').find('#playlist-albumart').attr('src', url);
+    $('#playlist-entry div[data-hashid=\'' + songObject.hashid + '\']').find('.track').text(songObject.track);
     chooseColorOfButton(songObject.videoid);
     persistPlaylist();
 }
@@ -289,9 +274,9 @@ function updateTimestampInLibrary(songObject) {
 }
 
 function onPlayerStateChange(event) {
-    if (event.data == YT.PlayerState.ENDED) {
-        playNext();
-    }
+    if (event.data == YT.PlayerState.ENDED) playNext();
+    if (event.data == YT.PlayerState.PLAYING) play();
+    if (event.data == YT.PlayerState.PAUSED) pause();
 }
 
 // trim the starting items of the playlist if it starts increasing beyond 50 elements
@@ -480,7 +465,7 @@ function is_playing() {
     else if (icon.hasClass('glyphicon-play')) return false;
 }
 
-function playToggle(button) {
+function playToggle() {
     if (is_playing()) pause();
     else play();
 }
