@@ -63,7 +63,7 @@ function loadNowPlaying(songObject) {
         showYTPlayer();
         setTimeout(function(){
             pause();
-            setTimeout(function(){play();}, 100);
+            setTimeout(function(){play();}, 400);
         },1000);
         populateRecommendations(songObject.videoid);
         //enqueueInRadio(current_song.track, user.name);
@@ -159,8 +159,8 @@ function getSeek() {
 function addToPlaylist(songObject) {
     $('<li class = "list-group-item clearfix" id = "playlist-entry">'
         + '<div id="playlist-' + songObject.videoid + '" data-hashid="' + songObject.hashid + '">'
-        + '<img class = "col-sm-4" id = "playlist-albumart" class = "img-thumbnail"/>'
-        + '<p class = "col-sm-6 track" onclick = "playOnTrackClick(this)"></p>'
+        + '<img class = "col-sm-2" id = "playlist-albumart" class = "img-thumbnail"/>'
+        + '<p class = "col-sm-8 track" onclick = "playOnTrackClick(this)"></p>'
         + '<button type="button" class="glyphicon col-sm-1" id="button-' + songObject.videoid + '" onclick = "updateLibrary(this);"></button>'
         + '<button type="button" class="close" onclick = "removeFromPlaylist(this);">&times;</button>'
         + '</div>'
