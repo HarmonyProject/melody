@@ -99,9 +99,11 @@ function showYTPlayer() {
 }
 
 function initYTPlayer(videoid, seek) {
+    pwidth = $('.playlist').width();
+    pheight = pwidth * 9/16;
     player = new YT.Player('video-box', {
-        height: '350',
-        width: '620',
+        height: pheight,
+        width: pwidth,
         videoId: videoid,
         playerVars: {
             'rel': 0,

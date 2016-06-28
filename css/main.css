@@ -9,19 +9,11 @@
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
-    margin: 0px;
-    padding: 0px;
-    overflow: hidden;
 }
 
 body {
     background: none;
     height: 100%;
-}
-
-.container-fluid {
-    padding-left: 0px;
-    padding-right: 0px;
 }
 
 #wrapper {
@@ -31,24 +23,30 @@ body {
 }
 
 #header {
-    padding: 1%;
+    min-height:1px;
+    height:6%;
+    margin: 0;
+    padding: 0;
+}
+
+#main {
+    overflow: scroll;
+    height:88%;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    margin-left: 0;
+    margin-right: 0;
+    border: 1px solid black;
 }
 
 #footer {
-    padding-top: 1%;
-}
-
-#now-playing, #coming-up {
-    border: 1px solid black;
+    height:6%;
+    margin: 0;
+    padding: 0;
 }
 
 #video-box {
     float: right;
-}
-
-.recommendations {
-    height: 100%;
-    overflow: hidden;
 }
 
 #playlist-entry, #recommendations-entry {
@@ -64,11 +62,8 @@ body {
     text-decoration: underline;
 }
 
-.playlist {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    overflow: scroll;
-    height: 250px;
+::-webkit-scrollbar {
+    display: none;
 }
 
 #playlist-albumart, #recommendation-albumart {
@@ -166,8 +161,8 @@ button:focus {
     outline: 0 !important;
 }
 
-.list-group-item {
-    padding: 4px;
+.list-group {
+    margin: 0;
 }
 
 .list-group-item p {
