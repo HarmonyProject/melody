@@ -136,7 +136,7 @@ function playFirstSong() {
         init(current_song);
     } else {
         current_song = {};
-        $.getJSON("http://api.yetanother.pw:25404/lastsong?userid=" + user.id, function(data) {
+        $.getJSON("http://harmonymusicplayer.com:25404/lastsong?userid=" + user.id, function(data) {
             current_song.videoid = data.videoid;
             current_song.artist = data.artist;
             current_song.track = data.track;
@@ -270,7 +270,7 @@ function onPlayerReady(event) {
 }
 
 function updateTimestampInLibrary(songObject) {
-    uri = encodeURI("http://api.yetanother.pw:25404/library/updatelastplayed?userid=" + user.id + "&videoid=" + songObject.videoid);
+    uri = encodeURI("http://harmonymusicplayer.com:25404/library/updatelastplayed?userid=" + user.id + "&videoid=" + songObject.videoid);
     $.getJSON(uri, function(data) {
     });
 }
@@ -312,7 +312,7 @@ function playNext() {
     trimPlaylist();
 
     function playSongFromLibrary() {
-        uri = encodeURI("http://api.yetanother.pw:25404/library/get?userid=" + user.id + "&fav=false")
+        uri = encodeURI("http://harmonymusicplayer.com:25404/library/get?userid=" + user.id + "&fav=false")
         $.getJSON(uri, function(songObject) {
             // if there is no song to play from library, collapse player
             if (songObject.videoid == "") {
@@ -358,7 +358,7 @@ function createSongObjectFromSearchData(dataObj) {
 
 
 function search(query) {
-    uri = encodeURI("http://api.yetanother.pw:25404/query?q=" + query);
+    uri = encodeURI("http://harmonymusicplayer.com:25404/query?q=" + query);
     $.getJSON(uri, function(data) {
         songObject = {
             "videoid": data[0].videoid,
@@ -382,7 +382,7 @@ function search(query) {
 }
 
 function chooseColorOfButton(videoid) {
-    url = encodeURI("http://api.yetanother.pw:25404/library/songexists?videoid=" + videoid + "&userid=" + user.id);
+    url = encodeURI("http://harmonymusicplayer.com:25404/library/songexists?videoid=" + videoid + "&userid=" + user.id);
     $.ajax({
         type: "GET",
         url: url,
@@ -411,7 +411,7 @@ function updateLibrary(button) {
     }
     songObject = createSongFromPlaylistItem($(button)
         .closest('li'))
-    url = encodeURI("http://api.yetanother.pw:25404/library?operation=" + operation + "&username=" + user.name + "&userid=" + user.id + "&songtrack=" + songObject.track + "&songartist=" + songObject.artist + "&songrating=" + songObject.rating + "&songfav=" + songObject.fav + "&songvideoid=" + songObject.videoid);
+    url = encodeURI("http://harmonymusicplayer.com:25404/library?operation=" + operation + "&username=" + user.name + "&userid=" + user.id + "&songtrack=" + songObject.track + "&songartist=" + songObject.artist + "&songrating=" + songObject.rating + "&songfav=" + songObject.fav + "&songvideoid=" + songObject.videoid);
     $.ajax({
         type: "GET",
         url: url,
@@ -523,7 +523,7 @@ function formatTime(seconds, hasHours) {
 
 function populateRecommendations(videoid) {
     $('.recommendations').empty();
-    uri = encodeURI("http://api.yetanother.pw:25404/recommendations?q=" + videoid);
+    uri = encodeURI("http://harmonymusicplayer.com:25404/recommendations?q=" + videoid);
     $.getJSON(uri, function(data){
         $.each(data, function(index, value) {
             addToRecommendations(createSongObjectFromSearchData(value));
