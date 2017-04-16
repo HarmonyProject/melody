@@ -12,7 +12,7 @@ var user;
 }(document, 'script', 'facebook-jssdk'));
 window.fbAsyncInit = function() {
     FB.init({
-        appId: '902706029842457',
+        appId: config.appId,
         xfbml: true,
         version: 'v2.5'
     });
