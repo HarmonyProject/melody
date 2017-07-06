@@ -125,7 +125,7 @@ function initYTPlayer(videoid, seek) {
 }
 
 function loadLogoBox() {
-    FB.api('/v2.5/' + user.id + '/picture', function(response) {
+    FB.api('/v2.5/' + user.email + '/picture', function(response) {
         $('#fb-avatar')
             .attr('src', response.data.url);
     });
@@ -138,7 +138,7 @@ function playFirstSong() {
         init(current_song);
     } else {
         current_song = {};
-        uri = encodeURI(API_URL + "/lastsong?userid=" + user.id);
+        uri = encodeURI(API_URL + "/lastsong?userid=" + user.email);
         $.getJSON(uri, function(data) {
             current_song.videoid = data.videoid;
             current_song.artist = data.artist;
@@ -273,7 +273,7 @@ function onPlayerReady(event) {
 }
 
 function updateTimestampInLibrary(songObject) {
-    uri = encodeURI(API_URL + "/library/updatelastplayed?userid=" + user.id + "&videoid=" + songObject.videoid);
+    uri = encodeURI(API_URL + "/library/updatelastplayed?userid=" + user.email + "&videoid=" + songObject.videoid);
     $.getJSON(uri, function(data) {
     });
 }
@@ -315,7 +315,7 @@ function playNext() {
     trimPlaylist();
 
     function playSongFromLibrary() {
-        uri = encodeURI(API_URL + "/library/get?userid=" + user.id + "&fav=false")
+        uri = encodeURI(API_URL + "/library/get?userid=" + user.email + "&fav=false")
         $.getJSON(uri, function(songObject) {
             // if there is no song to play from library, collapse player
             if (songObject.videoid == "") {
@@ -391,7 +391,7 @@ function search(query) {
 }
 
 function chooseColorOfButton(videoid) {
-    url = encodeURI(API_URL + "/library/songexists?videoid=" + videoid + "&userid=" + user.id);
+    url = encodeURI(API_URL + "/library/songexists?videoid=" + videoid + "&userid=" + user.email);
     $.ajax({
         type: "GET",
         url: url,
@@ -420,7 +420,7 @@ function updateLibrary(button) {
     }
     songObject = createSongFromPlaylistItem($(button)
         .closest('li'))
-    url = encodeURI(API_URL + "/library?operation=" + operation + "&username=" + user.name + "&userid=" + user.id + "&songtrack=" + songObject.track + "&songartist=" + songObject.artist + "&songrating=" + songObject.rating + "&songfav=" + songObject.fav + "&songvideoid=" + songObject.videoid);
+    url = encodeURI(API_URL + "/library?operation=" + operation + "&username=" + user.name + "&userid=" + user.email + "&songtrack=" + songObject.track + "&songartist=" + songObject.artist + "&songrating=" + songObject.rating + "&songfav=" + songObject.fav + "&songvideoid=" + songObject.videoid);
     $.ajax({
         type: "GET",
         url: url,
