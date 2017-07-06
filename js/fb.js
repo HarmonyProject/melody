@@ -45,7 +45,9 @@ function load() {
 }
 
 function getIdentity() {
-    FB.api('/me', function(response) {
+    FB.api('/me', { locale: 'en_US', fields: 'name, email' }, function
+    (response) {
+        console.log(response);
         user = response;
         loadLogoBox();
         load();
